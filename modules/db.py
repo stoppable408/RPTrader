@@ -15,7 +15,6 @@ class db():
     def __init__(self):
         load_dotenv()
         connector = Connector()
-        print(os.getenv("db_user"))
         # function to return the database connection
         def getconn() -> pymysql.connections.Connection:
             conn: pymysql.connections.Connection = connector.connect(

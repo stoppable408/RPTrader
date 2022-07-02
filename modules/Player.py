@@ -12,6 +12,7 @@ class Player():
 
 
     def modify(self, number):
+        print(number)
         try:
             rp = self.currentRP
             if (rp + number) < 0:
@@ -33,13 +34,6 @@ class Player():
             self.update()
         except Exception as e:
             raise Exception(e)
-
-    def give(self, player, number):
-        try:
-            self.subtract(number)
-            player.add(number)
-        except Exception as e:
-            return Exception(e)
 
     def update(self):
         database = db.db()

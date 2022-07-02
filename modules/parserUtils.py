@@ -16,22 +16,24 @@ def checkPlayer(roles):
             return True
     return False
 
-def getUserFromDB(member):
-    member_id = member.id
+def getUserFromDB(member_id, member=None):
     playerList = database.getUserByID(member_id)
     if not playerList:
-        print("Player does not exist in database. Initializing Database Entry for {}".format(member.name))
+        print("Player does not exist in database. Initialized Database Entry for {}".format(member.name))
         database.insertNewUser(member)
     player = Player.Player(database.getUserByID(member_id)[0])
     return player
 
-def getUser(message , client):
-    return client.get_user(message.author.id)
+def getUser(user_id, client):
+    return client.get_user(user_id)
     
 async def sendMessage(message, statement, reaction=None):
     if reaction:
         await message.add_reaction(reaction)
     await message.channel.send(statement)
+
+async def messageUser(user, statement):
+    await user.send(statement)
 
 
 # def getName(message):
@@ -124,7 +126,6 @@ async def sendMessage(message, statement, reaction=None):
         
 async def parseMessage(message, client):
     # print(message)
-    isAdmin = checkAdmin(message.author.roles)
     
 # we do not want the bot to reply to itself
     if message.author == client.user:
@@ -140,12 +141,13 @@ async def parseMessage(message, client):
         for member in client.get_all_members():
             isPlayer = checkPlayer(member.roles)
             if isPlayer:
-                player = getUserFromDB(member)
+                player = getUserFromDB(member.id,member)
                 print(member.name, member.id)
             
 
     if len(message.mentions):
         if "add" in message.content or "subtract" in message.content:
+            isAdmin = checkAdmin(message.author.roles)
             if isAdmin:
                 print("----------------------")
                 messageArray = message.content.split(" ")
@@ -153,13 +155,13 @@ async def parseMessage(message, client):
                 try:
                     number = int(messageArray.pop())
                 except Exception as e:
-                    user = getUser(message, client)
-                    statement = user.mention + " You did not use a proper number. Please use the following format: \n\n !please add <number> <user>"
+                    user = getUser(message.author.id, client)
+                    statement = user.mention + " You did not use the proper format. Please use the following format: \n\n !please add <amount> <user>"
                     await sendMessage(message, statement, "❌")
                     return
                 action = messageArray.pop()
                 try:
-                    player = getUserFromDB(message.mentions[0])
+                    player = getUserFromDB(message.mentions[0].id)
                     if action == 'subtract':
                         player.subtract(number)
                         term = "removed from"
@@ -169,24 +171,40 @@ async def parseMessage(message, client):
                     statement = "RP successfully {} {}. New RP total: {}".format(term, player.name, player.currentRP)
                     await sendMessage(message, statement, "☑")
                 except Exception as e:
-                    user = getUser(message, client)
+                    user = getUser(message.author.id, client)
                     statement = user.mention + " I've encountered an Error. details: {}".format(e)
                     await sendMessage(message, statement, "❌")
                     return
 
     if "give" in message.content:
         messageArray = message.content.split(" ")
-        print(messageArray)
-        print(type(messageArray[-1]))
-        recipient_id = int(re.sub("<|@|>","", messageArray.pop()))
-        amount = int(messageArray.pop())
-        # try:
-        #     number = int(messageArray.pop())
-        # except:
-        #     number = int(messageArray.pop())
+        try:
+            recipient_id = int(re.sub("<|@|>","", messageArray.pop()))
+            amount = int(messageArray.pop())
+        except:
+            user = getUser(message.author.id, client)
+            statement = user.mention + " You did not use the proper format. Please use the following format: \n\n !please give <amount> <user>"
+            await sendMessage(message, statement, "❌")
+            return  
+        try:
+            recipient = getUserFromDB(recipient_id)
+            donor = getUserFromDB(message.author.id)
+            donor.subtract(amount)
+            recipient.add(amount)
 
-        print(recipient_id)
-        print(amount)
+            user = getUser(message.author.id, client)
+            statement = "{} RP successfully transferred to {}.".format(amount, recipient.name)
+            await sendMessage(message, statement,  "☑")
+            recipient_user_obj = getUser(recipient_id, client)
+            statement = "You have received {} RP from {}. Your new total is {}".format(amount, donor.name, recipient.currentRP)
+            await messageUser(recipient_user_obj, statement)
+        except Exception as e:
+            print(e)
+            user = getUser(message.author.id, client)
+            statement = user.mention + "This transaction could not be processed. You have insufficient funds."
+            await sendMessage(message, statement, "❌")
+        print(vars(recipient))
+        print(vars(donor))
 
 
         
