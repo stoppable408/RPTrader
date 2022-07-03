@@ -5,6 +5,7 @@ import time
 from importlib import reload
 
 database = db.db()
+locked = False
 def checkAdmin(roles):
     for role in roles:
         if str(role) == "Gamemaster":
@@ -48,95 +49,9 @@ async def messageUser(user, statement):
     await user.send(statement)
 
 
-# def getName(message):
-#     name = message.author.name
-#     discriminator = message.author.discriminator
-#     return name + "#" + discriminator
-
-# def getUsers(emailList, client):
-#     allUsers = client.users
-#     contacts = contactUtils.getContacts()
-#     userList = []
-#     finalUserList = []
-#     for email in emailList:
-#         for contact in contacts:
-#             if email == contacts[contact][0]:
-#                 userList.append(contacts[contact][1])
-#     for user in userList:
-#         for users in allUsers:
-#             name = users.name + "#" + users.discriminator
-#             if user == name:
-#                 finalUserList.append(users)
-#     return finalUserList
-    
-
-
-# def checkPermissions(message, client):
-#     if "Palpatine" not in message.author.name and "Alamander" not in message.author.name:
-#         return False
-#     else:
-#         return True
-
-# async def reject(message, client):
-#         await message.add_reaction("🇳")
-#         await message.add_reaction("🇴")
-#         await message.add_reaction("🅿")
-#         await message.add_reaction("🇪")
-
-# async def addReact(message, client, msg, user):
-#         if msg[0] == True and msg[1] != "":
-#             statement = user.mention + " You have been added to the waitlist for this session, because you are in the " + msg[1]
-#             await message.add_reaction("✔")
-#             await message.channel.send(statement)
-#         elif msg[0] == True and msg[1] == "":
-#             await message.add_reaction("☑")
-#         elif msg[0] == False  and msg[1] == "Full":
-#             statement = user.mention + " The mission you're trying to join is full"
-#             await message.add_reaction("❌")
-#             await message.channel.send(statement)
-#         elif msg[0] == False and msg[1] == "Double":
-#             statement = user.mention + " You're already in this mission. You cannot join twice"
-#             await message.add_reaction("❌")
-#             await message.channel.send(statement)
-#         elif msg[0] == False and msg[1] == "Invalid":
-#             await message.add_reaction("❌")
-#             statement = user.mention + " You did not use the correct format. Please make the format fit the following: \n\r \"Helper add! (insert name/race/class, session date (in M\D format), region)\""
-#             await message.channel.send(statement)    
-#         elif msg[0] == False and msg[1] == "Missing":
-#             await message.add_reaction("❌")
-#             statement = user.mention + " There is no session scheduled for the date and region you mentioned."
-#             await message.channel.send(statement)  
-#         elif msg[0] == False and msg[1] == "No Level in Description":
-#             await message.add_reaction("❌")
-#             statement = user.mention + " You did not include your character's level in the description. Please resubmit your request with a proper level"
-#             await message.channel.send(statement)      
-#         elif msg[0] == False and isinstance(msg[1],list):
-#             await message.add_reaction("❌")
-#             Lennon = client.get_user(399383747746725899)
-#             userList = getUsers(msg[1], client)
-#             statement = user.mention + " Your character is out of tier. Please gather consent from the following members: \n\n"
-#             for person in userList:
-#                 statement += person.mention + "\n"
-#             statement += "\n and then message " + Lennon.mention + " and he will add you later"
-#             await message.channel.send(statement)    
-            
-# async def removeReact(message, client, msg, user):
-#         if msg[0] == False and msg[1] == "Invalid":
-#             await message.add_reaction("❌")
-#             statement = user.mention + " You did not use the correct format. Please review the correct format and try again. "
-#             await message.channel.send(statement)    
-#         if msg[0] == False and msg[1] == "Empty":
-#             await message.add_reaction("❌")
-#             statement = user.mention + " You are not in this mission. You cannot leave a mission you aren't in."
-#             await message.channel.send(statement)      
-#         if msg[0] == True:
-#             date = msg[1][0]
-#             region = msg[1][1]
-#             await message.add_reaction("☑")      
-#             statement = user.mention + " You have been removed from the {region} session scheduled for {date}".format(region=region,date=date)
-#             await message.channel.send(statement)   
         
 async def parseMessage(message, client):
+    global locked
     # print(message)
     
 # we do not want the bot to reply to itself
@@ -156,6 +71,30 @@ async def parseMessage(message, client):
                 player = getUserFromDB(member.id,member)
                 print(member.name, member.id)
             
+    if "howmuch" in message.content:
+        player = getUserFromDB(message.author.id)
+        user = getUser(message.author.id, client)
+        statement = "Your currently have {} RP.".format(player.currentRP)
+        await messageUser(user, statement)
+
+    if "add4" in message.content:
+        for member in client.get_all_members():
+            isPlayer = checkPlayer(member.roles)
+            if isPlayer:
+                player = getUserFromDB(member.id,member)
+                player.add(4)
+                time.sleep(1)   
+        statement = "All current players have had their RP increased by 4"
+        await sendMessage(message, statement, "☑")
+
+    if "lock" in message.content and "unlock" not in message.content:
+        locked = True
+        statement = "RP Transactions between players is currently locked."
+        await sendMessage(message, statement, "☑")
+    if "unlock" in message.content:
+        statement = "RP Transactions between players is currently unlocked."
+        await sendMessage(message, statement, "☑")
+        locked = False
 
     if len(message.mentions):
         if "add" in message.content or "subtract" in message.content:
@@ -189,6 +128,10 @@ async def parseMessage(message, client):
                     return
 
     if "give" in message.content:
+        if locked:
+            statement = "This action is currently locked. You must wait for the GMs to unlock it."
+            await sendMessage(message, statement, "❌")
+            return
         messageArray = message.content.split(" ")
         try:
             recipient_id = int(re.sub("<|@|>","", messageArray.pop()))
@@ -199,9 +142,11 @@ async def parseMessage(message, client):
             await sendMessage(message, statement, "❌")
             return  
         try:
-            recipient = getUserFromDB(recipient_id)
+            
             donor = getUserFromDB(message.author.id)
             donor.subtract(amount)
+            time.sleep(2)
+            recipient = getUserFromDB(recipient_id)
             recipient.add(amount)
 
             user = getUser(message.author.id, client)
