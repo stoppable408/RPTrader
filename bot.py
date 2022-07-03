@@ -7,7 +7,7 @@ from importlib import reload
 load_dotenv()
 TOKEN = os.getenv('AUTH_TOKEN')
 intents = discord.Intents.default()
-intents.members = True 
+intents.members = True
 client = discord.Client(intents=intents)
 @client.event
 
