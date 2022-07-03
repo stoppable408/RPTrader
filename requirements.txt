@@ -3,4 +3,4 @@ protobuf==4.21.2
 PyMySQL==1.0.2
 python-dotenv==0.20.0
 SQLAlchemy==1.4.28
-google.cloud < 0.34.0
+google.cloud==0.34.0
