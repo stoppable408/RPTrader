@@ -1,6 +1,6 @@
 import discord
 from dotenv import load_dotenv
-from modules import parserUtils, Player, db
+from modules import parserUtils, Player, db, Transaction, formatUtils
 import re, os, random
 from importlib import reload
 
@@ -12,9 +12,11 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_message(message):
     if "restart!" in message.content:
+            reload(formatUtils)
+            reload(db)
+            reload(Transaction)
             reload(Player)
             reload(parserUtils)
-            reload(db)
             await message.add_reaction("👍")
     else:
         await parserUtils.parseMessage(message,client)

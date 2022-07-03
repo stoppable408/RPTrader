@@ -32,6 +32,8 @@ class db():
             creator=getconn,
         )
 
+
+    #User Queries
     def getUserByID(self, user_id):
         with self.pool.connect() as db_conn:
             query = "SELECT * FROM players WHERE id = {}".format(user_id)
@@ -69,3 +71,88 @@ class db():
                 print("Removing all players from database")
             except Exception as e:
                 print(e)
+
+
+    #Transaction Queries
+    def insertTransaction(self, transaction):
+        query = sqlalchemy.text("INSERT INTO transactions (id, player_id, amount, transaction_status, created_on)\
+         VALUES (:id, :player_id, :amount, :transaction_status, :created_on)",)
+        
+        with self.pool.connect() as db_conn:
+            try:
+                db_conn.execute(query, id=transaction.transaction_id, 
+                 player_id=transaction.player_id,
+                 amount=transaction.amount, 
+                 transaction_status=transaction.status, 
+                 created_on=transaction.created_on)
+                print("added Transaction")
+            except Exception as e:
+                print(e)
+ 
+    def getTransaction(self, transaction_id):
+        query = sqlalchemy.text("SELECT * FROM transactions WHERE id = :id")
+        
+        with self.pool.connect() as db_conn:
+            try:
+                result = db_conn.execute(query, id=transaction_id).fetchall()
+                return result
+            except Exception as e:
+                print(e)
+
+    def listPendingTransactions(self):
+        query = sqlalchemy.text("SELECT \
+                                t.id, p.name, t.amount, t.transaction_status, t.created_on \
+                                FROM\
+                                transactions t\
+                                JOIN players p ON p.id = t.player_id\
+                                WHERE\
+                                t.transaction_status = 'Pending'\
+                                ORDER BY t.created_on;")
+        with self.pool.connect() as db_conn:
+            try:
+                results = db_conn.execute(query).fetchall()
+                return results
+            except Exception as e:
+                print(e)
+
+    def listPendingTransactions(self):
+        query = sqlalchemy.text("SELECT \
+                                t.id, p.name, t.amount, t.transaction_status, t.created_on \
+                                FROM\
+                                transactions t\
+                                JOIN players p ON p.id = t.player_id\
+                                WHERE\
+                                t.transaction_status = 'Pending'\
+                                ORDER BY t.created_on;")
+        with self.pool.connect() as db_conn:
+            try:
+                results = db_conn.execute(query).fetchall()
+                return results
+            except Exception as e:
+                print(e)
+
+    def listUserTransactionHistory(self, player_id, lookback=30):
+        query = sqlalchemy.text("SELECT\
+        t.id, p.name, t.amount, t.transaction_status, t.created_on\
+        FROM transactions t\
+        JOIN players p \
+        ON p.id = t.player_id\
+        WHERE t.created_on BETWEEN DATE_SUB(NOW(), INTERVAL {} DAY) AND NOW()\
+        AND p.id = {}\
+        ORDER BY t.created_on;".format(lookback, player_id))
+        with self.pool.connect() as db_conn:
+            try:
+                results = db_conn.execute(query).fetchall()
+                return results
+            except Exception as e:
+                print(e)
+
+    def updateTransaction(self, transaction):
+        query = sqlalchemy.text('UPDATE transactions SET transaction_status = :status WHERE id = :id;',)
+        with self.pool.connect() as db_conn:
+            try:
+                db_conn.execute(query, id=transaction.transaction_id, status=transaction.status)
+                print("Updated Transaction")
+            except Exception as e:
+                print(e)
+

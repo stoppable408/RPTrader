@@ -1,4 +1,5 @@
-from modules import db
+from modules import db, Transaction
+
 
 class Player():
     currentRP = 0
@@ -11,19 +12,24 @@ class Player():
         self.player_id = player_tuple[0]
 
 
-    def modify(self, number):
+    def modify(self, number, transaction=None):
         print(number)
         try:
             rp = self.currentRP
             if (rp + number) < 0:
                 raise Exception("There is not enough RP to perform this transaction")
             self.currentRP += number
+            if not transaction:
+                current_transaction = Transaction.Transaction(self.player_id, number, "Approved")
+                current_transaction.addTransaction()
+            else:
+                transaction.update()
         except Exception as e:
             raise Exception(e)
 
-    def add(self, number):
+    def add(self, number, transaction=None):
         try:
-            self.modify(number)
+            self.modify(number, transaction)
             self.update()
         except Exception as e:
             raise Exception(e)
