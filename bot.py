@@ -10,6 +10,7 @@ intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 @client.event
+
 async def on_message(message):
     if "restart!" in message.content:
             reload(formatUtils)
