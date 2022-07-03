@@ -1,6 +1,5 @@
 
 
-from google.cloud import storage
 from google.cloud.sql.connector import Connector
 import sqlalchemy
 import pymysql
