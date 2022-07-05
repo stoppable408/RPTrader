@@ -61,71 +61,6 @@ async def parseMessage(message, client):
     if not message.content.startswith("!please"):
         return
 
-    if "drop" in message.content:
-        database.dropTable()
-    
-    if "make" in message.content:
-        for member in client.get_all_members():
-            isPlayer = checkPlayer(member.roles)
-            if isPlayer:
-                player = getUserFromDB(member.id,member)
-                print(member.name, member.id)
-            
-    if "howmuch" in message.content:
-        player = getUserFromDB(message.author.id)
-        user = getUser(message.author.id, client)
-        statement = "Your currently have {} RP.".format(player.currentRP)
-        await messageUser(user, statement)
-
-    if "add4" in message.content:
-        for member in client.get_all_members():
-            isPlayer = checkPlayer(member.roles)
-            if isPlayer:
-                player = getUserFromDB(member.id,member)
-                player.add(4)
-                time.sleep(1)   
-        statement = "All current players have had their RP increased by 4"
-        await sendMessage(message, statement, "☑")
-
-    if "lock" in message.content and "unlock" not in message.content:
-        locked = True
-        statement = "RP Transactions between players is currently locked."
-        await sendMessage(message, statement, "☑")
-    if "unlock" in message.content:
-        statement = "RP Transactions between players is currently unlocked."
-        await sendMessage(message, statement, "☑")
-        locked = False
-
-    if len(message.mentions):
-        if "add" in message.content or "subtract" in message.content:
-            isAdmin = checkAdmin(message.author.roles)
-            if isAdmin:
-                print("----------------------")
-                messageArray = message.content.split(" ")
-                mention = messageArray.pop()
-                try:
-                    number = int(messageArray.pop())
-                except Exception as e:
-                    user = getUser(message.author.id, client)
-                    statement = user.mention + " You did not use the proper format. Please use the following format: \n\n !please add <amount> <user>"
-                    await sendMessage(message, statement, "❌")
-                    return
-                action = messageArray.pop()
-                try:
-                    player = getUserFromDB(message.mentions[0].id)
-                    if action == 'subtract':
-                        player.subtract(number)
-                        term = "removed from"
-                    else:
-                        player.add(number)
-                        term = "added for"
-                    statement = "RP successfully {} {}. New RP total: {}".format(term, player.name, player.currentRP)
-                    await sendMessage(message, statement, "☑")
-                except Exception as e:
-                    user = getUser(message.author.id, client)
-                    statement = user.mention + " I've encountered an Error. details: {}".format(e)
-                    await sendMessage(message, statement, "❌")
-                    return
 
     if "give" in message.content:
         if locked:
@@ -182,6 +117,87 @@ async def parseMessage(message, client):
         statement = user.mention + " You have successfully submitted a transaction. The transaction is now pending.\n\
                                      \rPlease wait for the GMs to approve it.\n\nYour transaction ID is: {}".format(transaction.transaction_id)
         await sendMessage(message, statement, "☑")
+
+
+    if "howmuch" in message.content:
+        #Query for a player's RP count
+        player = getUserFromDB(message.author.id)
+        user = getUser(message.author.id, client)
+        statement = "Your currently have {} RP.".format(player.currentRP)
+        await messageUser(user, statement)
+    # if "drop" in message.content:
+    #     database.dropTable()
+    
+    if "make" in message.content:
+        #Command to put all players in database
+        isAdmin = checkAdmin(message.author.roles)
+        if isAdmin:
+            for member in client.get_all_members():
+                isPlayer = checkPlayer(member.roles)
+                if isPlayer:
+                    player = getUserFromDB(member.id,member)
+            statement = "All Players have been added to database"
+            await sendMessage(message, statement, "☑")
+                
+
+    if "add4" in message.content:
+        #Adds 4 RP to each player's account
+        isAdmin = checkAdmin(message.author.roles)
+        if isAdmin:
+            for member in client.get_all_members():
+                isPlayer = checkPlayer(member.roles)
+                if isPlayer:
+                    player = getUserFromDB(member.id,member)
+                    player.add(4)
+                    time.sleep(1)   
+            statement = "All current players have had their RP increased by 4"
+            await sendMessage(message, statement, "☑")
+
+    if "lock" in message.content and "unlock" not in message.content:
+        #Locks the 'give' command and prevents it from being used.
+        isAdmin = checkAdmin(message.author.roles)
+        if isAdmin:
+            locked = True
+            statement = "RP Transactions between players is currently locked."
+            await sendMessage(message, statement, "☑")
+    if "unlock" in message.content:
+        #unlocks the 'give' command and allows it to be used.
+        isAdmin = checkAdmin(message.author.roles)
+        if isAdmin:
+            statement = "RP Transactions between players is currently unlocked."
+            await sendMessage(message, statement, "☑")
+            locked = False
+
+    if len(message.mentions):
+        if "add" in message.content or "subtract" in message.content:
+            isAdmin = checkAdmin(message.author.roles)
+            if isAdmin:
+                print("----------------------")
+                messageArray = message.content.split(" ")
+                mention = messageArray.pop()
+                try:
+                    number = int(messageArray.pop())
+                except Exception as e:
+                    user = getUser(message.author.id, client)
+                    statement = user.mention + " You did not use the proper format. Please use the following format: \n\n !please add <amount> <user>"
+                    await sendMessage(message, statement, "❌")
+                    return
+                action = messageArray.pop()
+                try:
+                    player = getUserFromDB(message.mentions[0].id)
+                    if action == 'subtract':
+                        player.subtract(number)
+                        term = "removed from"
+                    else:
+                        player.add(number)
+                        term = "added for"
+                    statement = "RP successfully {} {}. New RP total: {}".format(term, player.name, player.currentRP)
+                    await sendMessage(message, statement, "☑")
+                except Exception as e:
+                    user = getUser(message.author.id, client)
+                    statement = user.mention + " I've encountered an Error. details: {}".format(e)
+                    await sendMessage(message, statement, "❌")
+                    return
 
 
     if "approveall" in message.content:
