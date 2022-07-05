@@ -25,7 +25,7 @@ Welcome to RP Bot. A Bot that allows for an automated management of RP for Playe
 | Command | Description |
 | --- | --- |
 | `!please spend <amount>`| Submits a transaction for &lt;amount&gt; to the GMs for approval. |
-| `!please give <amount> <mention_user or user_id>` | Gives &lt;amount&gt; to player. <br/><br/> Only works when unlocked | 
+| `!please give <amount> <mention_user or user_id>` | Gives &lt;amount&gt; to player. <br/><br/> Will send a message to the receiving user once completed. Only works when unlocked | 
 
 
 **Note:** All these commands will work if you privately message the bot. Allowing you to have anonymity when spending RP or giving RP. 
