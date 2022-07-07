@@ -102,7 +102,7 @@ async def parseMessage(message, client):
         status = "Pending"
         user = getUser(player_id, client)
         try:
-            amount = -(int(messageArray.pop()))
+            amount = -(abs(int(messageArray.pop())))
         except:
             statement = user.mention + " You did not use the proper format. Please use the following format: \n\n !please spend <amount>"
             await sendMessage(message, statement, "❌")
