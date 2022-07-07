@@ -70,7 +70,7 @@ async def parseMessage(message, client):
         messageArray = message.content.split(" ")
         try:
             recipient_id = int(re.sub("<|@|>","", messageArray.pop()))
-            amount = int(messageArray.pop())
+            amount = abs(int(messageArray.pop()))
         except:
             user = getUser(message.author.id, client)
             statement = user.mention + " You did not use the proper format. Please use the following format: \n\n !please give <amount> <user>"
