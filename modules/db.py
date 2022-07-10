@@ -69,6 +69,11 @@ class db():
             except Exception as e:
                 print(e)
 
+    def getAllUsers(self):
+        query = "SELECT name, rp FROM players"
+        with self.pool.connect() as db_conn:
+            result = db_conn.execute(query).fetchall()
+            return result
 
     #Transaction Queries
     def insertTransaction(self, transaction):

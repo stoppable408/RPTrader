@@ -26,6 +26,10 @@ def getUserFromDB(member_id, member=None):
     player = Player.Player(database.getUserByID(member_id)[0])
     return player
 
+def getAllUsersFromDB():
+    return database.getAllUsers()
+
+
 def getTransactionFromDB(transaction_id):
     db_transaction = database.getTransaction(transaction_id)[0]
     player_id = db_transaction[1]
@@ -39,6 +43,7 @@ def getTransactionFromDB(transaction_id):
 
 def getUser(user_id, client):
     return client.get_user(user_id)
+
     
 async def sendMessage(message, statement, reaction=None):
     if reaction:
@@ -95,6 +100,30 @@ async def parseMessage(message, client):
             user = getUser(message.author.id, client)
             statement = user.mention + "This transaction could not be processed. You have insufficient funds."
             await sendMessage(message, statement, "❌")
+
+    if "getid" in message.content:
+        messageArray = message.content.split(" ")
+        try:
+            userId = int(re.sub("<|@|>","", messageArray.pop()))
+        except:
+            user = getUser(message.author.id, client)
+            statement = user.mention + " You did not use the proper format. Please use the following format: \n\n !please getid <user>"
+            await message.delete()
+            await messageUser(user, statement)
+            return  
+        try:
+            user = getUser(message.author.id, client)
+            user_to_get = getUserFromDB(userId)
+            statement = "{}'s ID: {}".format(user_to_get.name, user_to_get.player_id)
+            await message.delete()
+            await messageUser(user, statement)
+        except Exception as e:
+            print(e)
+            user = getUser(message.author.id, client)
+            statement = user.mention + "I've encountered an error and was not able to get the User's ID."
+            await message.delete()
+            await messageUser(user, statement)
+
 
     if "spend" in message.content:
         messageArray = message.content.split(" ")
@@ -330,4 +359,11 @@ async def parseMessage(message, client):
 
     
 
-        
+    if "getall" in message.content:
+        isAdmin = checkAdmin(message.author.roles)
+        if isAdmin:
+            playerList = getAllUsersFromDB()
+            print(playerList)
+            statements = (formatUtils.formatUsers(playerList))
+            for statement in statements:
+                    await sendMessage(message, statement)
