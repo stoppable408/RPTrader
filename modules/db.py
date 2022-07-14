@@ -35,6 +35,7 @@ class db():
         with self.pool.connect() as db_conn:
             query = "SELECT * FROM players WHERE id = {}".format(user_id)
             result = db_conn.execute(query).fetchall()
+            db_conn.close()
             return result
         
     def insertNewUser(self, member):
@@ -48,7 +49,7 @@ class db():
                 print("Added {} into Database".format(name))
             except Exception as e:
                 print(e)
-    
+            db_conn.close()
 
     def updateUser(self, member):
         query = sqlalchemy.text('UPDATE players SET name = :name, rp = :rp WHERE id = :id;',)
@@ -58,7 +59,7 @@ class db():
                 print("Updated RP value for {}. The new RP value for this user is {}".format(member.name, member.currentRP))
             except Exception as e:
                 print(e)
-
+            db_conn.close()
 
     def dropTable(self):
         query = "DELETE FROM players"
@@ -68,11 +69,13 @@ class db():
                 print("Removing all players from database")
             except Exception as e:
                 print(e)
+            db_conn.close()
 
     def getAllUsers(self):
         query = "SELECT name, rp FROM players"
         with self.pool.connect() as db_conn:
             result = db_conn.execute(query).fetchall()
+            db_conn.close()
             return result
 
     #Transaction Queries
@@ -90,6 +93,7 @@ class db():
                 print("added Transaction")
             except Exception as e:
                 print(e)
+            db_conn.close()
  
     def getTransaction(self, transaction_id):
         query = sqlalchemy.text("SELECT * FROM transactions WHERE id = :id")
@@ -97,9 +101,11 @@ class db():
         with self.pool.connect() as db_conn:
             try:
                 result = db_conn.execute(query, id=transaction_id).fetchall()
+                db_conn.close()
                 return result
             except Exception as e:
                 print(e)
+            db_conn.close()
 
     def listPendingTransactions(self):
         query = sqlalchemy.text("SELECT \
@@ -113,9 +119,11 @@ class db():
         with self.pool.connect() as db_conn:
             try:
                 results = db_conn.execute(query).fetchall()
+                db_conn.close()
                 return results
             except Exception as e:
                 print(e)
+            db_conn.close()
 
     def listPendingTransactions(self):
         query = sqlalchemy.text("SELECT \
@@ -129,9 +137,11 @@ class db():
         with self.pool.connect() as db_conn:
             try:
                 results = db_conn.execute(query).fetchall()
+                db_conn.close()
                 return results
             except Exception as e:
                 print(e)
+            db_conn.close()
 
     def listUserTransactionHistory(self, player_id, lookback=30):
         query = sqlalchemy.text("SELECT\
@@ -145,9 +155,11 @@ class db():
         with self.pool.connect() as db_conn:
             try:
                 results = db_conn.execute(query).fetchall()
+                db_conn.close()
                 return results
             except Exception as e:
                 print(e)
+            db_conn.close()
 
     def updateTransaction(self, transaction):
         query = sqlalchemy.text('UPDATE transactions SET transaction_status = :status WHERE id = :id;',)
@@ -157,4 +169,5 @@ class db():
                 print("Updated Transaction")
             except Exception as e:
                 print(e)
+            db_conn.close()
 
