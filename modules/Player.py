@@ -45,3 +45,4 @@ class Player():
         database = db.db()
         player_info = database.getUserByID(self.player_id)
         database.updateUser(self)
+

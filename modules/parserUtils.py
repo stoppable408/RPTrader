@@ -26,6 +26,7 @@ def getUserFromDB(member_id, member=None):
     player = Player.Player(database.getUserByID(member_id)[0])
     return player
 
+
 def getAllUsersFromDB():
     return database.getAllUsers()
 
@@ -40,6 +41,11 @@ def getTransactionFromDB(transaction_id):
     transaction = Transaction.Transaction(player_id, amount, status, created_on, transaction_id)
     return transaction
 
+def getSenator(client):
+    for member in client.get_all_members():
+        roles = [x.name for x in member.roles]
+        if "King" in roles and "Caexan Republic" in roles:
+            return member
 
 def getUser(user_id, client):
     return client.get_user(user_id)
@@ -152,10 +158,71 @@ async def parseMessage(message, client):
         #Query for a player's RP count
         player = getUserFromDB(message.author.id)
         user = getUser(message.author.id, client)
+
         statement = "Your currently have {} RP.".format(player.currentRP)
         await messageUser(user, statement)
-    # if "drop" in message.content:
-    #     database.dropTable()
+
+        if message.author.id == getSenator(client).id:
+            treasury = getUserFromDB(1)
+            statement = "---------------------------\
+                \nThere is currently {} in the treasury.".format(treasury.currentRP)
+            await messageUser(user, statement)
+
+
+
+
+
+
+    if "tax" in message.content:
+        messageArray = message.content.split(" ")
+        try:
+            amount = abs(int(messageArray.pop()))
+        except Exception as e:
+            user = getUser(message.author.id, client)
+            statement = user.mention + " You did not use the proper format. Please use the following format: \n\n !please tax <amount>"
+            await sendMessage(message, statement, "❌")
+            return
+        taxpayer = getUserFromDB(message.author.id)
+        taxpayer.subtract(amount)
+        time.sleep(2)
+        treasury = getUserFromDB(1)
+        treasury.add(amount)
+        
+        #Tell the king that someone paid taxes
+        king_as_member = getSenator(client)
+        statement = "{} has just paid {}RP for taxes.\
+                    \nthe treasury currently has {}RP".format(taxpayer.name, amount, treasury.currentRP)
+        await messageUser(king_as_member, statement)
+
+        #Tell the player his taxes are paid
+        user = getUser(message.author.id, client)
+        statement = "You have just paid {}RP for taxes.\
+            \nPlease update the tax sheet to reflect this change.".format(amount)
+        await messageUser(user, statement)
+
+    if "allocate" in message.content:        
+        king_as_member = getSenator(client)
+        if message.author == king_as_member:
+            messageArray = message.content.split(" ")
+            try:
+                amount = abs(int(messageArray.pop()))
+            except Exception as e:
+                user = getUser(message.author.id, client)
+                statement = user.mention + " You did not use the proper format. Please use the following format: \n\n !please tax <amount>"
+                await sendMessage(message, statement, "❌")
+                return
+            treasury = getUserFromDB(1)
+            treasury.subtract(amount)
+            time.sleep(2)
+            king_as_player = getUserFromDB(king_as_member.id)
+            king_as_player.add(amount)
+            statement = "You have taken {}RP out of the treasury.\
+                        \nThe treasury currently has {}RP".format(amount, treasury.currentRP)
+            await messageUser(king_as_member, statement)
+
+
+
+
     
     if "make" in message.content:
         #Command to put all players in database
@@ -165,6 +232,11 @@ async def parseMessage(message, client):
                 isPlayer = checkPlayer(member.roles)
                 if isPlayer:
                     player = getUserFromDB(member.id,member)
+            
+            #Makes the treasury player if they don't exist already
+            treasury = Player.Player((1, "Treasury", 0))
+            treasury.id = treasury.player_id
+            player = getUserFromDB(treasury.id,treasury)
             statement = "All Players have been added to database"
             await sendMessage(message, statement, "☑")
                 
