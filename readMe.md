@@ -31,4 +31,11 @@ Welcome to RP Bot. A Bot that allows for an automated management of RP for Playe
 | `!please give <amount> <mention_user or user_id>` | Gives &lt;amount&gt; to player. <br/><br/> Will send a message to the receiving user once completed. Only works when trading is unlocked | 
 
 
+## **Caexan Republic Player Only Commands:**
+| Command    | Description |
+| --- | --- |
+| `!please tax <amount>`| Pays &lt;amount&gt; in taxes. Adds that amount to the treasury. |
+
+
+
 **Note:** All these commands will work if you privately message the bot. Allowing you to have anonymity when spending RP or giving RP. 
