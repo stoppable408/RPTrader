@@ -6,7 +6,7 @@ Welcome to RP Bot. A Bot that allows for an automated management of RP for Playe
 ## **Admin Only Commands:**
 | Command | Description |
 | --- | --- |
-| `!please make` | Adds all players to the database and sets their RP count to 0. If a player is already in the database, this command will skip that player and their RP count will not be affected. <br/><br/> Once this command has added all players to the database, it will print (in the channel the command was used) "All Players have been added to database" |
+| `!please make` | Adds all players to the database and sets their RP count to 0. If a player is already in the database, this command will skip that player and their RP count will not be affected. <br/><br/> Once this command has added all players to the database, it will print (in the channel the command was used) "All Players have been added to database"  <br/><br/> Note: "player" is defined as a person with the "Count", "Baron", or "King" role. |
 | `!please add4`| Adds 4 RP to all players accounts. <br/><br/> Once this command has completed. It will print (in the channel the command was used) "All current players have had their RP increased by 4" |
 | `!please lock` | Locks Player-to-Player transactions <br/><br/> Once this command has run, it will print  (in the channel the command was used) "RP transactions between players is currently locked"  |
 | `!please unlock` | Unlocks Player-to-Player transactions <br/><br/> Once this command has run, it will print  (in the channel the command was used) "RP transactions between players is currently unlocked"  |
