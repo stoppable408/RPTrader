@@ -88,7 +88,12 @@ async def parseMessage(message, client):
             await sendMessage(message, statement, "❌")
             return  
         try:
-            
+            #Expansion checks
+            donor_as_user = getUser(message.author.id, client)
+            recipient_as_user = getUser(recipient_id, client)
+            print(donor_as_user.roles)
+            print(recipient_as_user.roles)
+
             donor = getUserFromDB(message.author.id)
             donor.subtract(amount)
             time.sleep(2)
@@ -98,9 +103,9 @@ async def parseMessage(message, client):
             user = getUser(message.author.id, client)
             statement = "{} RP successfully transferred to {}.".format(amount, recipient.name)
             await sendMessage(message, statement,  "☑")
-            recipient_user_obj = getUser(recipient_id, client)
-            statement = "\n\nYou have received {} RP from {}. Your new total is {}".format(amount, donor.name, recipient.currentRP)
-            await messageUser(recipient_user_obj, statement)
+            # recipient_user_obj = getUser(recipient_id, client)
+            # statement = "\n\nYou have received {} RP from {}. Your new total is {}".format(amount, donor.name, recipient.currentRP)
+            # await messageUser(recipient_user_obj, statement)
         except Exception as e:
             print(e)
             user = getUser(message.author.id, client)
