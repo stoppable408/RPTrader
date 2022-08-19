@@ -41,7 +41,7 @@ class db():
         
     def insertNewUser(self, member):
         player_id = member.id
-        name = member.name
+        name = member.name.encode('utf8')
         query = sqlalchemy.text("INSERT INTO players (id, name, rp) VALUES (:id, :name, :rp)",)
 
         with self.pool.connect() as db_conn:
@@ -56,7 +56,7 @@ class db():
         query = sqlalchemy.text('UPDATE players SET name = :name, rp = :rp WHERE id = :id;',)
         with self.pool.connect() as db_conn:
             try:
-                db_conn.execute(query, id=member.player_id, name=member.name, rp=member.currentRP)
+                db_conn.execute(query, id=member.player_id, name=member.name.encode('utf8'), rp=member.currentRP)
                 print("Updated RP value for {}. The new RP value for this user is {}".format(member.name, member.currentRP))
             except Exception as e:
                 print(e)
