@@ -8,7 +8,7 @@ class Player():
 
     def __init__(self, player_tuple):
         self.currentRP = player_tuple[2]
-        self.name = player_tuple[1].decode('utf8')
+        self.name = player_tuple[1]
         self.player_id = player_tuple[0]
 
 
