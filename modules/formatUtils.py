@@ -61,7 +61,7 @@ def formatTransactions(transactionList):
     for transaction in transactionList:
         transaction_id = transaction[0]
         player_name = transaction[1]
-        amount = str(-(transaction[2]))
+        amount = str((transaction[2]))
         status = transaction[3]
         date = formatDate(transaction[4])
 

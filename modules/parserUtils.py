@@ -23,9 +23,7 @@ def getUserFromDB(member_id, member=None):
     if not playerList:
         print("Player does not exist in database. Initialized Database Entry for {}".format(member.name))
         database.insertNewUser(member)
-    playerinfo = database.getUserByID(member_id)[0]
-    print(playerinfo)
-    player = Player.Player(playerinfo)
+    player = Player.Player(database.getUserByID(member_id)[0])
     return player
 
 
