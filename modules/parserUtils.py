@@ -114,8 +114,12 @@ async def parseMessage(message, client):
             statement = "{} RP successfully transferred to {}.".format(amount, recipient.name)
             await sendMessage(message, statement,  "☑")
             recipient_user_obj = getUser(recipient_id, client)
-            statement = "\n\nYou have received {} RP from {}. Your new total is {}".format(amount, donor.name, recipient.currentRP)
-            await messageUser(recipient_user_obj, statement)
+            try:
+                statement = "\n\nYou have received {} RP from {}. Your new total is {}".format(amount, donor.name, recipient.currentRP)
+                await messageUser(recipient_user_obj, statement)
+            except:
+                statement = "Could not send a message to User {}. The RP was sent, but the recipient was not informed. Please inform the recipient".format(recipient.name)
+                await sendMessage(message, statements)
         except Exception as e:
             print(e)
             user = getUser(message.author.id, client)
