@@ -125,6 +125,7 @@ async def parseMessage(message, client):
             user = getUser(message.author.id, client)
             statement = user.mention + "This transaction could not be processed. You have insufficient funds."
             await sendMessage(message, statement, "❌")
+            
 
     if "getid" in message.content:
         messageArray = message.content.split(" ")
@@ -458,3 +459,4 @@ async def parseMessage(message, client):
             statements = (formatUtils.formatUsers(playerList))
             for statement in statements:
                     await sendMessage(message, statement)
+    return
