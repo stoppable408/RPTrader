@@ -61,6 +61,27 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+            
+    def getAllUsersWithIDs(self):
+        query = "SELECT name, id FROM players"
+        with self.pool.connect() as db_conn:
+            result = db_conn.execute(query).fetchall()
+            db_conn.close()
+            return result
+        
+    def deleteUser(self, member_id):
+        transaction_query = sqlalchemy.text('DELETE from transactions WHERE player_id = :id;',)
+        player_query = sqlalchemy.text('DELETE from players WHERE id = :id;',)
+        with self.pool.connect() as db_conn:
+            try:
+                db_conn.execute(transaction_query, id=member_id)
+                db_conn.execute(player_query, id=member_id)
+                print("Removing player with ID:{} from Database".format(member_id))
+                db_conn.close()
+            except Exception as e:
+                print(e)
+            db_conn.close()
+
 
     def dropTable(self):
         query = "DELETE FROM players"

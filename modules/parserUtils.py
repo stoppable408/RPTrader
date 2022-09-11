@@ -30,6 +30,8 @@ def getUserFromDB(member_id, member=None):
 def getAllUsersFromDB():
     return database.getAllUsers()
 
+def getUsersNamesAndIDs():
+    return database.getAllUsersWithIDs()
 
 def getTransactionFromDB(transaction_id):
     db_transaction = database.getTransaction(transaction_id)[0]
@@ -239,10 +241,7 @@ async def parseMessage(message, client):
             statement = "You have taken {}RP out of the treasury.\
                         \nThe treasury currently has {}RP".format(amount, treasury.currentRP)
             await messageUser(king_as_member, statement)
-
-
-
-
+            
     
     if "make" in message.content:
         #Command to put all players in database
@@ -257,9 +256,20 @@ async def parseMessage(message, client):
             treasury = Player.Player((1, "Treasury", 0))
             treasury.id = treasury.player_id
             player = getUserFromDB(treasury.id,treasury)
-            statement = "All Players have been added to database"
+            statement = "All Players have been added to database. Proceeding to Delete non-players from Database."
             await sendMessage(message, statement, "☑")
-                
+
+            databaseValues = set([x[1] for x in getUsersNamesAndIDs() if int(x[1]) != 1])
+            currentMembers = set([x.id for x in list(client.get_all_members()) if checkPlayer(x.roles)])
+            
+            playersToDelete = list(databaseValues - currentMembers)
+            for player_id in playersToDelete:
+                player = getUserFromDB(player_id)
+                database.deleteUser(player_id)
+                user = getUser(message.author.id, client)
+                statement = "{} has been removed from the Database. They had {} RP ".format(player.name, player.currentRP)
+                await messageUser(user, statement)
+                    
 
     if "add4" in message.content:
         #Adds 4 RP to each player's account
