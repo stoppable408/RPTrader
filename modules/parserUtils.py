@@ -5,7 +5,7 @@ import time
 from importlib import reload
 
 database = db.db()
-locked = False
+locked = True
 def checkAdmin(roles):
     for role in roles:
         if str(role) == "Gamemaster":

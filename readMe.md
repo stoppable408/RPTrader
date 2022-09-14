@@ -16,8 +16,8 @@ Welcome to RP Bot. A Bot that allows for an automated management of RP for Playe
 | `!please pending`| Prints all pending transactions (in the channel that the message was sent to) | 
 | `!please history <mention_user or user_id> <lookback (optional)> `| Prints the player's transaction history with an optional lookback window in days. <br/><br/> This can be called by either mentioning the player (using @player_name) or using the player's Discord ID.  <br/><br/> The lookback window is optional. if no lookback is provided, it will retreive the last 30 days of a user's transaction history | 
 | `!please getall`| Prints all players current RP amounts |
-| `!please add <number> <mention_user or user_id>`| Adds &lt;number&gt; to players RP total|
-| `!please subtract <number> <mention_user or user_id>`| Subtracts &lt;number&gt; from players RP total|
+| `!please add <number> <mention_user>`| Adds &lt;number&gt; to players RP total|
+| `!please subtract <number> <mention_users>`| Subtracts &lt;number&gt; from players RP total|
 
 
 
