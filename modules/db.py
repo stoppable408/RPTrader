@@ -52,6 +52,15 @@ class db():
                 print(e)
             db_conn.close()
 
+    def add4Users(self):
+        query = sqlalchemy.text('UPDATE players SET rp = rp + 4;',)
+        with self.pool.connect() as db_conn:
+            try:
+                db_conn.execute(query)
+            except Exception as e:
+                print(e)
+            db_conn.close()
+
     def updateUser(self, member):
         query = sqlalchemy.text('UPDATE players SET name = :name, rp = :rp WHERE id = :id;',)
         with self.pool.connect() as db_conn:

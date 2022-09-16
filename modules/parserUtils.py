@@ -52,6 +52,7 @@ def getSenator(client):
 def getUser(user_id, client):
     return client.get_user(user_id)
 
+
 def checkExpansion(client, user_id):
     for member in client.get_all_members():
         if user_id == member.id:
@@ -275,12 +276,7 @@ async def parseMessage(message, client):
         #Adds 4 RP to each player's account
         isAdmin = checkAdmin(message.author.roles)
         if isAdmin:
-            for member in client.get_all_members():
-                isPlayer = checkPlayer(member.roles)
-                if isPlayer:
-                    player = getUserFromDB(member.id,member)
-                    player.add(4)
-                    time.sleep(1)   
+            database.add4Users()
             statement = "All current players have had their RP increased by 4"
             await sendMessage(message, statement, "☑")
 
