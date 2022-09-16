@@ -469,4 +469,5 @@ async def parseMessage(message, client):
             statements = (formatUtils.formatUsers(playerList))
             for statement in statements:
                     await sendMessage(message, statement)
+    print("returning")
     return

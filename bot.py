@@ -21,6 +21,7 @@ async def on_message(message):
             await message.add_reaction("👍")
     else:
         await parserUtils.parseMessage(message,client)
+    print("returning bot.py")
     return
 
 @client.event
