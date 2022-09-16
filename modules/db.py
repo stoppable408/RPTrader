@@ -51,6 +51,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
 
     def add4Users(self):
         query = sqlalchemy.text('UPDATE players SET rp = rp + 4;',)
@@ -60,6 +61,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
 
     def updateUser(self, member):
         query = sqlalchemy.text('UPDATE players SET name = :name, rp = :rp WHERE id = :id;',)
@@ -70,6 +72,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
             
     def getAllUsersWithIDs(self):
         query = "SELECT name, id FROM players"
@@ -90,6 +93,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
 
 
     def dropTable(self):
@@ -101,6 +105,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
 
     def getAllUsers(self):
         query = "SELECT name, rp FROM players"
@@ -125,6 +130,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
  
     def getTransaction(self, transaction_id):
         query = sqlalchemy.text("SELECT * FROM transactions WHERE id = :id")
@@ -137,6 +143,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
 
     def listPendingTransactions(self):
         query = sqlalchemy.text("SELECT \
@@ -155,6 +162,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
 
     def listPendingTransactions(self):
         query = sqlalchemy.text("SELECT \
@@ -173,6 +181,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
 
     def listUserTransactionHistory(self, player_id, lookback=30):
         query = sqlalchemy.text("SELECT\
@@ -191,6 +200,7 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
 
     def updateTransaction(self, transaction):
         query = sqlalchemy.text('UPDATE transactions SET transaction_status = :status WHERE id = :id;',)
@@ -201,4 +211,5 @@ class db():
             except Exception as e:
                 print(e)
             db_conn.close()
+        return
 
