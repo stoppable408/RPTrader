@@ -112,7 +112,7 @@ async def parseMessage(message, client):
             time.sleep(2)
             recipient = getUserFromDB(recipient_id)
             recipient.add(amount)
-
+            
             user = getUser(message.author.id, client)
             statement = "{} RP successfully transferred to {}.".format(amount, recipient.name)
             await sendMessage(message, statement,  "☑")
@@ -465,5 +465,4 @@ async def parseMessage(message, client):
             statements = (formatUtils.formatUsers(playerList))
             for statement in statements:
                     await sendMessage(message, statement)
-    print("returning")
     return
