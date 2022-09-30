@@ -5,7 +5,7 @@ import time
 from importlib import reload
 
 database = db.db()
-locked = False
+locked = True
 def checkAdmin(roles):
     for role in roles:
         if str(role) == "Gamemaster":
@@ -277,6 +277,8 @@ async def parseMessage(message, client):
         isAdmin = checkAdmin(message.author.roles)
         if isAdmin:
             database.add4Users()
+            treasury = getUserFromDB(1)
+            treasury.subtract(4)
             statement = "All current players have had their RP increased by 4"
             await sendMessage(message, statement, "☑")
 
