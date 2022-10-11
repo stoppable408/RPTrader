@@ -4,7 +4,6 @@ import discord
 import time
 from importlib import reload
 
-database = db.db()
 locked = False
 def checkAdmin(roles):
     for role in roles:
@@ -81,6 +80,7 @@ async def parseMessage(message, client):
     if not message.content.startswith("!please"):
         return
 
+    database = db.db()
 
     if "give" in message.content:
         if locked:
@@ -128,6 +128,7 @@ async def parseMessage(message, client):
             user = getUser(message.author.id, client)
             statement = user.mention + "This transaction could not be processed. You have insufficient funds."
             await sendMessage(message, statement, "❌")
+        return
             
 
     if "getid" in message.content:
@@ -152,6 +153,7 @@ async def parseMessage(message, client):
             statement = user.mention + "I've encountered an error and was not able to get the User's ID."
             await message.delete()
             await messageUser(user, statement)
+        return
 
 
     if "spend" in message.content:
@@ -175,6 +177,7 @@ async def parseMessage(message, client):
         statement = user.mention + " You have successfully submitted a transaction. The transaction is now pending.\n\
                                      \rPlease wait for the GMs to approve it.\n\nYour transaction ID is: {}".format(transaction.transaction_id)
         await sendMessage(message, statement, "☑")
+        return
 
 
     if "howmuch" in message.content:
@@ -190,6 +193,7 @@ async def parseMessage(message, client):
             statement = "---------------------------\
                 \nThere is currently {} in the treasury.".format(treasury.currentRP)
             await messageUser(user, statement)
+        return
 
 
 
@@ -222,6 +226,7 @@ async def parseMessage(message, client):
         statement = "You have just paid {}RP for taxes.\
             \nPlease update the tax sheet to reflect this change.".format(amount)
         await messageUser(user, statement)
+        return
 
     if "allocate" in message.content:        
         king_as_member = getSenator(client)
@@ -242,6 +247,7 @@ async def parseMessage(message, client):
             statement = "You have taken {}RP out of the treasury.\
                         \nThe treasury currently has {}RP".format(amount, treasury.currentRP)
             await messageUser(king_as_member, statement)
+        return
             
     
     if "make" in message.content:
@@ -270,6 +276,7 @@ async def parseMessage(message, client):
                 user = getUser(message.author.id, client)
                 statement = "{} has been removed from the Database. They had {} RP ".format(player.name, player.currentRP)
                 await messageUser(user, statement)
+        return
                     
 
     if "add4" in message.content:
@@ -281,6 +288,7 @@ async def parseMessage(message, client):
             treasury.subtract(4)
             statement = "All current players have had their RP increased by 4"
             await sendMessage(message, statement, "☑")
+            return
 
     if "lock" in message.content and "unlock" not in message.content:
         #Locks the 'give' command and prevents it from being used.
@@ -289,6 +297,7 @@ async def parseMessage(message, client):
             locked = True
             statement = "RP Transactions between players is currently locked."
             await sendMessage(message, statement, "☑")
+            return
     if "unlock" in message.content:
         #unlocks the 'give' command and allows it to be used.
         isAdmin = checkAdmin(message.author.roles)
@@ -296,6 +305,7 @@ async def parseMessage(message, client):
             statement = "RP Transactions between players is currently unlocked."
             await sendMessage(message, statement, "☑")
             locked = False
+            return
 
     if len(message.mentions):
         if "add" in message.content or "subtract" in message.content:
@@ -418,6 +428,7 @@ async def parseMessage(message, client):
             transaction.status = "Denied"
             transaction.update()
             time.sleep(1)
+            return
 
     if "pending" in message.content:
         isAdmin = checkAdmin(message.author.roles)
@@ -430,6 +441,7 @@ async def parseMessage(message, client):
             else:
                 statement = "☑ There are no pending transactions ☑"
                 await sendMessage(message, statement)
+            return
     
 
     if "history" in message.content:
@@ -456,6 +468,7 @@ async def parseMessage(message, client):
             else:
                 statement = "{} has no transaction history for this time period".format(player.name)
                 await sendMessage(message, statement)
+            return
 
     
 
@@ -467,4 +480,5 @@ async def parseMessage(message, client):
             statements = (formatUtils.formatUsers(playerList))
             for statement in statements:
                     await sendMessage(message, statement)
+            return
     return

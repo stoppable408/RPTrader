@@ -38,6 +38,7 @@ class db():
             result = db_conn.execute(query).fetchall()
             db_conn.close()
             return result
+        return
         
     def insertNewUser(self, member):
         player_id = member.id
@@ -80,6 +81,7 @@ class db():
             result = db_conn.execute(query).fetchall()
             db_conn.close()
             return result
+        return
         
     def deleteUser(self, member_id):
         transaction_query = sqlalchemy.text('DELETE from transactions WHERE player_id = :id;',)
@@ -113,6 +115,7 @@ class db():
             result = db_conn.execute(query).fetchall()
             db_conn.close()
             return result
+        return
 
     #Transaction Queries
     def insertTransaction(self, transaction):
