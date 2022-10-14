@@ -4,6 +4,7 @@ import discord
 import time
 from importlib import reload
 
+database = db.db()
 locked = True
 def checkAdmin(roles):
     for role in roles:
@@ -18,7 +19,6 @@ def checkPlayer(roles):
     return False
 
 def getUserFromDB(member_id, member=None):
-    database = db.db()
     playerList = database.getUserByID(member_id)
     if not playerList:
         print("Player does not exist in database. Initialized Database Entry for {}".format(member.name))
@@ -28,15 +28,12 @@ def getUserFromDB(member_id, member=None):
 
 
 def getAllUsersFromDB():
-    database = db.db()
     return database.getAllUsers()
 
 def getUsersNamesAndIDs():
-    database = db.db()
     return database.getAllUsersWithIDs()
 
 def getTransactionFromDB(transaction_id):
-    database = db.db()
     db_transaction = database.getTransaction(transaction_id)[0]
     player_id = db_transaction[1]
     amount = db_transaction[2]
@@ -84,7 +81,6 @@ async def parseMessage(message, client):
     if not message.content.startswith("!please"):
         return
 
-    database = db.db()
 
     if "give" in message.content:
         if locked:

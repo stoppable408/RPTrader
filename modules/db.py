@@ -11,16 +11,17 @@ class db():
 
     def __init__(self):
         load_dotenv()
-        connector = Connector()
+        # connector = Connector()
         # function to return the database connection
         def getconn() -> pymysql.connections.Connection:
-            conn: pymysql.connections.Connection = connector.connect(
-                os.getenv('db_conn'),
-                "pymysql",
-                user=os.getenv('db_user'),
-                password=os.getenv('db_pass'),
-                db=os.getenv('db_name')
-            )
+            with Connector() as connector:
+                conn = connector.connect(
+                    os.getenv('db_conn'),
+                    "pymysql",
+                    user=os.getenv('db_user'),
+                    password=os.getenv('db_pass'),
+                    db=os.getenv('db_name')
+                )
             return conn
 
         # create connection pool
@@ -91,7 +92,6 @@ class db():
                 db_conn.execute(transaction_query, id=member_id)
                 db_conn.execute(player_query, id=member_id)
                 print("Removing player with ID:{} from Database".format(member_id))
-                db_conn.close()
             except Exception as e:
                 print(e)
             db_conn.close()
