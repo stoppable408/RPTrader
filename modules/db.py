@@ -12,6 +12,9 @@ class db():
     def __init__(self):
         load_dotenv()
         # connector = Connector()
+
+        #Database resources
+        #https://pypi.org/project/cloud-sql-python-connector/
         # function to return the database connection
         def getconn() -> pymysql.connections.Connection:
             with Connector() as connector:

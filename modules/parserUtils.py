@@ -5,7 +5,7 @@ import time
 from importlib import reload
 
 database = db.db()
-locked = True
+locked = False
 def checkAdmin(roles):
     for role in roles:
         if str(role) == "Gamemaster":
@@ -52,6 +52,13 @@ def getSenator(client):
 def getUser(user_id, client):
     return client.get_user(user_id)
 
+def checkTrader(client, user_id):
+    for member in client.get_all_members():
+        if user_id == member.id:
+            roles = [x.name for x in member.roles]
+            if "International Trade" in roles:
+                return True
+            return False
 
 def checkExpansion(client, user_id):
     for member in client.get_all_members():
@@ -97,14 +104,17 @@ async def parseMessage(message, client):
             await sendMessage(message, statement, "❌")
             return  
         try:
-            #Expansion checks
-            is_donor_expansion = checkExpansion(client, message.author.id)
-            is_recipient_expansion = checkExpansion(client, recipient_id)
-            if (is_donor_expansion and not is_recipient_expansion) or (not is_donor_expansion and is_recipient_expansion):
-                user = getUser(message.author.id, client)
-                statement = user.mention + "This transaction could not be processed. You are attempting to send RP to a person on a different continent."
-                await sendMessage(message, statement, "❌")
-                return
+            is_donor_a_trader = checkTrader(client, message.author.id)
+            is_recipient_a_trader = checkTrader(client, recipient_id)
+            if not (is_donor_a_trader or is_recipient_a_trader):
+                #Expansion checks
+                is_donor_expansion = checkExpansion(client, message.author.id)
+                is_recipient_expansion = checkExpansion(client, recipient_id)
+                if (is_donor_expansion and not is_recipient_expansion) or (not is_donor_expansion and is_recipient_expansion):
+                    user = getUser(message.author.id, client)
+                    statement = user.mention + "This transaction could not be processed. You are attempting to send RP to a person on a different continent."
+                    await sendMessage(message, statement, "❌")
+                    return
 
 
             donor = getUserFromDB(message.author.id)
