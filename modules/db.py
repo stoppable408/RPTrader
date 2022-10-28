@@ -31,7 +31,7 @@ class db():
         self.pool = sqlalchemy.create_engine(
             "mysql+pymysql://",
             creator=getconn,
-            pool_recycle=1800, pool_pre_ping=True
+            pool_recycle=300, pool_pre_ping=True
         )
 
 
